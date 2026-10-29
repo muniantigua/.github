@@ -1,0 +1,57 @@
+
+name: Assign PR Team
+
+on:
+  workflow_call:
+    inputs:
+      team_develop:
+        description: "Team slug responsible for develop"
+        required: true
+        type: string
+      team_main:
+        description: "Team slug responsible for main"
+        required: true
+        type: string
+
+permissions:
+  pull-requests: write
+
+jobs:
+  assign-team:
+    name: Request team review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Assign team based on target branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const baseBranch = context.payload.pull_request.base.ref;
+
+            const teams = {
+              develop: '${{ inputs.team_develop }}',
+              main: '${{ inputs.team_main }}'
+            };
+
+            const team = teams[baseBranch];
+
+            if (!team) {
+              core.info(
+                `No review team configured for branch: ${baseBranch}`
+              );
+              return;
+            }
+
+            const { owner, repo } = context.repo;
+            const pull_number = context.issue.number;
+
+            await github.rest.pulls.requestReviewers({
+              owner,
+              repo,
+              pull_number,
+              team_reviewers: [team]
+            });
+
+            core.info(
+              `Review requested from team "${team}" for PR #${pull_number}.`
+            );

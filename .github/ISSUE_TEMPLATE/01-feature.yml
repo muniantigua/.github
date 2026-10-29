@@ -1,0 +1,62 @@
+
+name: "Solicitud de funcionalidad"
+description: "Solicitar una nueva funcionalidad o mejora."
+title: "[FUNCIONALIDAD] "
+labels:
+  - "feature"
+  - "triage"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Solicitud de funcionalidad
+        Describe la necesidad y el valor que aportará esta funcionalidad.
+
+  - type: textarea
+    id: problema
+    attributes:
+      label: "Descripción del problema"
+      description: "¿Qué problema o necesidad se busca resolver?"
+      placeholder: "Describe la situación actual y sus limitaciones."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solucion
+    attributes:
+      label: "Solución propuesta"
+      description: "¿Cómo debería funcionar la nueva funcionalidad?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterios-aceptacion
+    attributes:
+      label: "Criterios de aceptación"
+      description: "Define las condiciones necesarias para considerar completada la funcionalidad."
+      placeholder: |
+        - [ ] Criterio de aceptación 1
+        - [ ] Criterio de aceptación 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: "Prioridad"
+      options:
+        - "Crítica"
+        - "Alta"
+        - "Media"
+        - "Baja"
+    validations:
+      required: true
+
+  - type: textarea
+    id: contexto-adicional
+    attributes:
+      label: "Contexto adicional"
+      description: "Agrega referencias, diseños, capturas de pantalla o detalles técnicos."
+    validations:
+      required: false

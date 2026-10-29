@@ -1,0 +1,80 @@
+
+name: "Tarea técnica"
+description: "Registrar tareas de desarrollo, mantenimiento, investigación o documentación."
+title: "[TAREA] "
+labels:
+  - "task"
+
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: "Objetivo"
+      description: "¿Qué se necesita lograr con esta tarea?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alcance
+    attributes:
+      label: "Alcance del trabajo"
+      description: "Describe las actividades y los componentes involucrados."
+    validations:
+      required: true
+
+  - type: textarea
+    id: entregables
+    attributes:
+      label: "Entregables y actividades"
+      description: "Enumera los resultados y las actividades necesarias para completar la tarea."
+      placeholder: |
+        - [ ] Actividad 1
+        - [ ] Actividad 2
+        - [ ] Entregable final
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tipo-tarea
+    attributes:
+      label: "Tipo de tarea"
+      options:
+        - "Deuda técnica"
+        - "Refactorización"
+        - "Mantenimiento"
+        - "Documentación"
+        - "Investigación"
+        - "Pruebas"
+        - "Infraestructura y DevOps"
+        - "Configuración"
+        - "Otro"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: prioridad
+    attributes:
+      label: "Prioridad"
+      options:
+        - "Crítica"
+        - "Alta"
+        - "Media"
+        - "Baja"
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencias
+    attributes:
+      label: "Dependencias y riesgos"
+      description: "Indica bloqueos, dependencias técnicas o riesgos identificados."
+    validations:
+      required: false
+
+  - type: textarea
+    id: notas
+    attributes:
+      label: "Notas adicionales"
+      description: "Agrega cualquier información que facilite la ejecución de la tarea."
+    validations:
+      required: false

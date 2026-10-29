@@ -1,0 +1,90 @@
+
+name: "Reporte de error"
+description: "Reportar un error o comportamiento inesperado."
+title: "[ERROR] "
+labels:
+  - "bug"
+  - "triage"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Reporte de error
+        Proporciona información suficiente para reproducir e investigar el problema.
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: "Descripción del error"
+      description: "¿Qué sucede y cuál es el impacto del problema?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos-reproduccion
+    attributes:
+      label: "Pasos para reproducir el error"
+      description: "Describe los pasos exactos para reproducirlo."
+      placeholder: |
+        1. Ingresar al sistema.
+        2. Acceder al módulo correspondiente.
+        3. Ejecutar la acción.
+        4. Observar el resultado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: resultado-esperado
+    attributes:
+      label: "Resultado esperado"
+      description: "¿Qué debería suceder?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: resultado-obtenido
+    attributes:
+      label: "Resultado obtenido"
+      description: "¿Qué sucede realmente?"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: "Severidad"
+      description: "Indica el impacto técnico y funcional del error."
+      options:
+        - "Crítica"
+        - "Alta"
+        - "Media"
+        - "Baja"
+    validations:
+      required: true
+
+  - type: input
+    id: entorno
+    attributes:
+      label: "Entorno"
+      description: "Indica dónde ocurre el error."
+      placeholder: "Ej. Producción, pruebas, desarrollo."
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: "Versión del sistema"
+      description: "Indica la versión o compilación afectada."
+      placeholder: "Ej. 1.2.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: "Evidencias y registros"
+      description: "Adjunta capturas, mensajes de error o registros relevantes. Elimina previamente cualquier dato sensible."
+    validations:
+      required: false
