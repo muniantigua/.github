@@ -1,0 +1,48 @@
+
+name: "Issue general"
+description: "Crear un issue para solicitudes o situaciones que no corresponden a las demás plantillas."
+title: "[ISSUE] "
+labels:
+  - "triage"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Issue general
+
+        Utiliza esta plantilla cuando tu solicitud no corresponda
+        a una funcionalidad, un error o una tarea técnica específica.
+
+  - type: input
+    id: resumen
+    attributes:
+      label: "Resumen"
+      description: "Describe brevemente el asunto."
+      placeholder: "Escribe un resumen claro."
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: "Descripción"
+      description: "Explica el contexto y los detalles del issue."
+    validations:
+      required: true
+
+  - type: textarea
+    id: resultado-esperado
+    attributes:
+      label: "Resultado esperado"
+      description: "Indica qué resultado o resolución esperas."
+    validations:
+      required: false
+
+  - type: textarea
+    id: contexto-adicional
+    attributes:
+      label: "Contexto adicional"
+      description: "Agrega referencias, evidencias o información complementaria."
+    validations:
+      required: false
