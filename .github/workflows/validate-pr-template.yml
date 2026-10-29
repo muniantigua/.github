@@ -1,0 +1,186 @@
+
+name: Validate Pull Request Template
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  validate-pr-template:
+    name: Validate PR Template
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Validate Pull Request description
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          import sys
+
+          body = os.environ.get("PR_BODY") or ""
+
+          # Remove HTML comments to ignore template placeholders.
+          body = re.sub(r"<!--.*?-->", "", body, flags=re.DOTALL)
+
+          def get_section(title):
+              pattern = (
+                  r"^[ \t]*##[ \t]+"
+                  + re.escape(title)
+                  + r"[ \t]*#*[ \t]*\r?$"
+                  + r"([\s\S]*?)"
+                  + r"(?=^[ \t]*##[ \t]+|\Z)"
+              )
+              match = re.search(
+                  pattern,
+                  body,
+                  re.MULTILINE | re.IGNORECASE,
+              )
+              return match.group(1).strip() if match else ""
+
+          def get_checkboxes(section):
+              return re.findall(
+                  r"^[ \t]*[-*][ \t]+\[([ xX])\][ \t]+(.+?)\s*$",
+                  section,
+                  re.MULTILINE,
+              )
+
+          errors = []
+
+          # Validate required sections.
+          required_sections = [
+              "Descripción",
+              "Tipo de cambio",
+              "Cambios realizados",
+              "Pruebas realizadas",
+              "Checklist del desarrollador",
+              "Evidencias",
+              "Observaciones adicionales",
+              "Referencias",
+          ]
+
+          sections = {
+              title: get_section(title)
+              for title in required_sections
+          }
+
+          for title, content in sections.items():
+              if not content:
+                  errors.append(
+                      f"Falta la sección obligatoria: '{title}'."
+                  )
+
+          # Validate the change type selection.
+          change_types = get_checkboxes(
+              sections["Tipo de cambio"]
+          )
+
+          if not any(mark.lower() == "x" for mark, _ in change_types):
+              errors.append(
+                  "Selecciona al menos un tipo de cambio."
+              )
+
+          # Validate testing selections.
+          tests_section = sections["Pruebas realizadas"]
+          tests = get_checkboxes(tests_section)
+          selected_tests = [
+              label.strip()
+              for mark, label in tests
+              if mark.lower() == "x"
+          ]
+
+          if not selected_tests:
+              errors.append(
+                  "Selecciona al menos una opción en "
+                  "'Pruebas realizadas'."
+              )
+
+          no_tests = any(
+              "no aplica" in label.lower()
+              for label in selected_tests
+          )
+
+          if no_tests:
+              reason_match = re.search(
+                  r"^[ \t]*Motivo:[ \t]*(.+?)[ \t]*$",
+                  tests_section,
+                  re.MULTILINE | re.IGNORECASE,
+              )
+
+              if not reason_match or not reason_match.group(1).strip():
+                  errors.append(
+                      "Si seleccionas 'No aplica', agrega una "
+                      "justificación en una línea con el formato "
+                      "'Motivo: explicación'."
+                  )
+
+          # Do not allow selecting No aplica alongside other tests.
+          if no_tests and len(selected_tests) > 1:
+              errors.append(
+                  "No puedes seleccionar 'No aplica' junto con "
+                  "otras opciones de pruebas."
+              )
+
+          # Validate all developer checklist items.
+          checklist = get_checkboxes(
+              sections["Checklist del desarrollador"]
+          )
+
+          if not checklist:
+              errors.append(
+                  "El checklist del desarrollador debe contener "
+                  "elementos seleccionables."
+              )
+          else:
+              unchecked = [
+                  label.strip()
+                  for mark, label in checklist
+                  if mark.lower() != "x"
+              ]
+
+              if unchecked:
+                  errors.append(
+                      "Debes completar todos los elementos del "
+                      "checklist del desarrollador:"
+                  )
+                  errors.extend(
+                      f"  - {item}" for item in unchecked
+                  )
+
+          # Validate the description section.
+          description = sections["Descripción"]
+
+          if description and not re.search(
+              r"\S",
+              description,
+          ):
+              errors.append(
+                  "Completa la sección 'Descripción'."
+              )
+
+          # Report validation results.
+          if errors:
+              print("::error::La plantilla del Pull Request "
+                    "no cumple los requisitos.")
+              for error in errors:
+                  print(f"- {error}")
+              sys.exit(1)
+
+          print(
+              "La plantilla del Pull Request cumple "
+              "todos los requisitos."
+          )
+          PY
